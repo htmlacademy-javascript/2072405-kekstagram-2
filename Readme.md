@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Владимир Бусел](https://up.htmlacademy.ru/javascript-individual/2/user/2072405).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Новаш] (https://htmlacademy.ru/profile/stakeout).
 
 ---
 
