@@ -1,45 +1,20 @@
-
-// Функция для проверки длины строки
-function checkStringLength (string, maxLength) {
-  return string.length <= maxLength;
-}
-
-checkStringLength('проверяемая строка', 20);
-checkStringLength('проверяемая строка', 18);
-checkStringLength('проверяемая строка', 10);
-
-// Функция для проверки, является ли строка палиндромом
-function isPalindrome(string) {
-  const normalizedString = string.replaceAll(' ', '').toLowerCase();
-  let reversedString = '';
-  for (let i = normalizedString.length - 1; i >= 0; i--) {
-    reversedString += normalizedString[i];
+function isMeetingWithinWorkHours (workStartTime, workEndTime, meetingStartTime, meetingDuration) {
+  function timeToMinutes (time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
   }
-  return normalizedString === reversedString;
+
+  const workStartMinutes = timeToMinutes(workStartTime);
+  const workEndMinutes = timeToMinutes(workEndTime);
+  const meetingStartMinutes = timeToMinutes(meetingStartTime);
+  const meetingEndMinutes = meetingStartMinutes + meetingDuration;
+
+  return meetingStartMinutes >= workStartMinutes && meetingEndMinutes <= workEndMinutes;
 }
 
-isPalindrome('топот');
-isPalindrome('ДовОд');
-isPalindrome('Кекс');
-isPalindrome('Лёша на полке клопа нашёл ');
-
-// Функция для возврата числа из строки
-function getNumber (input) {
-  const string = input.toString();
-  let result = '';
-  for (let i = 0; i < string.length; i++) {
-    const number = parseInt(string[i], 10);
-
-    if (!Number.isNaN(number)) {
-      result += string[i];
-    }
-  }
-  return result.length ? parseInt(result, 10) : NaN;
-}
-
-getNumber(2023);
-getNumber('ECMAScript 2022');
-getNumber('1 кефир, 0.5 батона');
-getNumber(-1);
-getNumber(1.5);
-getNumber('ыв');
+// eslint-disable-next-line no-console
+console.log(isMeetingWithinWorkHours('08:00', '17:30', '14:00', 90),
+  isMeetingWithinWorkHours('8:0', '10:0', '8:0', 120),
+  isMeetingWithinWorkHours('08:00', '14:30', '14:00', 90),
+  isMeetingWithinWorkHours('14:00', '17:30', '08:0', 90),
+  isMeetingWithinWorkHours('8:00', '17:30', '08:00', 900));
