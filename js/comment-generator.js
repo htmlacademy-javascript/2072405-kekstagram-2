@@ -1,14 +1,12 @@
 import {CONFIG, MESSAGES, NAMES} from './constants.js';
 import {getRandomInteger, getRandomArrayElement} from './utils.js';
 
-
-let commentIdCounter = 1;
-
 export const createComment = () => {
+  let commentIdCounter = 1;
   const messageCount = getRandomInteger(CONFIG.MESSAGE_COUNT_RANGE.min, CONFIG.MESSAGE_COUNT_RANGE.max);
   let message = getRandomArrayElement(MESSAGES);
 
-  if (messageCount === 2) {
+  if (messageCount === CONFIG.MESSAGE_COUNT_RANGE.max) {
     let secondMessage = getRandomArrayElement(MESSAGES);
 
     while (secondMessage === message) {
