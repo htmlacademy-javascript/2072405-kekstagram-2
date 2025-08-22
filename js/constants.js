@@ -55,3 +55,6 @@ export const CONFIG = {
   MESSAGE_COUNT_RANGE: {min: 1, max: 2},
   AVATAR_RANGE: {min: 1, max: 6}
 };
+
+export const DEFAULT_IMAGE = 'img/placeholder.jpg';
+export const DEFAULT_DESCRIPTION = 'Фото без описания';
