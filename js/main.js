@@ -1,5 +1,6 @@
 import { generatePhotos } from './photo-generator.js';
+import { renderThumbnails } from './gallery-renderer.js';
 
 const photos = generatePhotos();
-// eslint-disable-next-line no-console
-console.log(photos);
+
+renderThumbnails(photos);
