@@ -25,21 +25,25 @@ const createCommentElement = ({ avatar, name, message }) => {
   const commentElement = document.createElement('li');
   commentElement.classList.add('social__comment');
 
-  commentElement.innerHTML = `
-    <img
-      class="social__picture"
-      src="${avatar || DEFAULT_IMAGE}"
-      alt="${name || 'Пользователь'}"
-      width="35"
-      height="35">
-    <p class="social__text">${message || ''}</p>
-  `;
+  const avatarImg = document.createElement('img');
+  avatarImg.classList.add('social__picture');
+  avatarImg.src = avatar || DEFAULT_IMAGE;
+  avatarImg.alt = name || 'Пользователь';
+  avatarImg.width = 35;
+  avatarImg.height = 35;
+
+  const commentText = document.createElement('p');
+  commentText.classList.add('social__text');
+  commentText.textContent = message || '';
+
+  commentElement.appendChild(avatarImg);
+  commentElement.appendChild(commentText);
 
   return commentElement;
 };
 
 const renderComments = (comments) => {
-  commentsContainer.innerHTML = '';
+  commentsContainer.textContent = '';
 
   if (!Array.isArray(comments) || comments.length === 0) {
     return;
@@ -110,6 +114,10 @@ export const openBigPicture = (photoData) => {
   };
 
   document.addEventListener('keydown', currentEscHandler);
+
+  if (closeButton) {
+    closeButton.focus();
+  }
 };
 
 if (closeButton) {
