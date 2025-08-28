@@ -1,4 +1,4 @@
-import { DEFAULT_IMAGE, DEFAULT_DESCRIPTION } from './constants.js';
+import { DEFAULT_IMAGE, DEFAULT_DESCRIPTION, COMMENTS_STEP } from './constants.js';
 import { isEscapeKey } from './utils.js';
 
 const bigPictureElement = document.querySelector('.big-picture');
@@ -11,7 +11,6 @@ const socialCaption = bigPictureElement.querySelector('.social__caption');
 const closeButton = bigPictureElement.querySelector('.big-picture__cancel');
 const body = document.body;
 
-// Элементы,которые скрываем по ТЗ
 const socialCommentCount = bigPictureElement.querySelector('.social__comment-count');
 const commentsLoader = bigPictureElement.querySelector('.comments-loader');
 
@@ -20,6 +19,8 @@ if (!bigPictureElement || !bigPictureImg || !likesCount || !commentsContainer) {
 }
 
 let currentEscHandler = null;
+let allComments = [];
+let shownCommentsCount = 0;
 
 const createCommentElement = ({ avatar, name, message }) => {
   const commentElement = document.createElement('li');
@@ -42,21 +43,62 @@ const createCommentElement = ({ avatar, name, message }) => {
   return commentElement;
 };
 
-const renderComments = (comments) => {
-  commentsContainer.textContent = '';
-
-  if (!Array.isArray(comments) || comments.length === 0) {
-    return;
+const updateCommentsCounter = () => {
+  if (commentsShownCount) {
+    commentsShownCount.textContent = shownCommentsCount;
   }
+  if (commentsTotalCount) {
+    commentsTotalCount.textContent = allComments.length;
+  }
+};
 
+const hideCommentsLoader = () => {
+  if (commentsLoader) {
+    commentsLoader.classList.add('hidden');
+  }
+};
+
+const showCommentsControls = () => {
+  if (socialCommentCount) {
+    socialCommentCount.classList.remove('hidden');
+  }
+  if (commentsLoader && shownCommentsCount < allComments.length) {
+    commentsLoader.classList.remove('hidden');
+  }
+};
+
+const showNextComments = () => {
   const fragment = document.createDocumentFragment();
 
-  comments.forEach((comment) => {
+  const nextComments = allComments.slice(shownCommentsCount, shownCommentsCount + COMMENTS_STEP);
+
+  nextComments.forEach((comment) =>{
     const commentElement = createCommentElement(comment);
     fragment.appendChild(commentElement);
   });
 
   commentsContainer.appendChild(fragment);
+
+  shownCommentsCount += nextComments.length;
+  updateCommentsCounter();
+
+  if (shownCommentsCount >= allComments.length) {
+    hideCommentsLoader();
+  }
+};
+
+const initComments = (comments) => {
+  allComments = Array.isArray(comments) ? comments : [];
+  shownCommentsCount = 0;
+
+  commentsContainer.textContent = '';
+
+  if (allComments.length > 0) {
+    showNextComments();
+    showCommentsControls();
+  } else {
+    updateCommentsCounter();
+  }
 };
 
 const fillBigPicture = (photoData) => {
@@ -67,23 +109,11 @@ const fillBigPicture = (photoData) => {
   likesCount.textContent = likes ?? 0;
   socialCaption.textContent = description || DEFAULT_DESCRIPTION;
 
-  const commentsArray = Array.isArray(comments) ? comments : [];
-  renderComments(commentsArray);
-
-  if (commentsShownCount && commentsTotalCount) {
-    const totalComments = commentsArray.length;
-    commentsShownCount.textContent = totalComments;
-    commentsTotalCount.textContent = totalComments;
-  }
+  initComments(comments);
 };
 
-const hideCommentControls = () => {
-  if (socialCommentCount) {
-    socialCommentCount.classList.add('hidden');
-  }
-  if (commentsLoader) {
-    commentsLoader.classList.add('hidden');
-  }
+const onLoadMoreCommentsClick = () => {
+  showNextComments();
 };
 
 export const closeBigPicture = () => {
@@ -94,6 +124,13 @@ export const closeBigPicture = () => {
     document.removeEventListener('keydown', currentEscHandler);
     currentEscHandler = null;
   }
+
+  if (socialCommentCount) {
+    socialCommentCount.classList.add('hidden');
+  }
+  if (commentsLoader) {
+    commentsLoader.classList.add('hidden');
+  }
 };
 
 const onCloseButtonClick = () => {
@@ -102,7 +139,6 @@ const onCloseButtonClick = () => {
 
 export const openBigPicture = (photoData) => {
   fillBigPicture(photoData);
-  hideCommentControls();
   bigPictureElement.classList.remove('hidden');
   body.classList.add('modal-open');
 
@@ -122,4 +158,8 @@ export const openBigPicture = (photoData) => {
 
 if (closeButton) {
   closeButton.addEventListener('click', onCloseButtonClick);
+}
+
+if (commentsLoader) {
+  commentsLoader.addEventListener('click', onLoadMoreCommentsClick);
 }

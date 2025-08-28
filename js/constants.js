@@ -58,3 +58,4 @@ export const CONFIG = {
 
 export const DEFAULT_IMAGE = 'img/placeholder.jpg';
 export const DEFAULT_DESCRIPTION = 'Фото без описания';
+export const COMMENTS_STEP = 5;
