@@ -30,9 +30,6 @@ const closeUploadForm = () => {
 
 const showModal = () => {
   imgUploadOverlay.classList.remove('hidden');
-};
-
-const blockPageScroll = () => {
   body.classList.add('modal-open');
 };
 
@@ -53,7 +50,6 @@ const attachEscapeHandler = (handler) => {
 
 const openUploadForm = () => {
   showModal();
-  blockPageScroll();
 
   currentEscHandler = createEscapeHandler();
   attachEscapeHandler(currentEscHandler);
