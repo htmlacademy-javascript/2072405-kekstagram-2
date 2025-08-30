@@ -28,22 +28,35 @@ const closeUploadForm = () => {
   imgUploadInput.value = '';
 };
 
-const openUploadForm = () => {
+const showModal = () => {
   imgUploadOverlay.classList.remove('hidden');
+};
+
+const blockPageScroll = () => {
   body.classList.add('modal-open');
+};
 
-  currentEscHandler = (evt) => {
-    if (isEscapeKey(evt)) {
-      if (document.activeElement === hashtagsInput ||
+const createEscapeHandler = () => (evt) => {
+  if (isEscapeKey(evt)) {
+    if (document.activeElement === hashtagsInput ||
           document.activeElement === descriptionInput) {
-        return;
-      }
-      evt.preventDefault();
-      closeUploadForm();
+      return;
     }
-  };
+    evt.preventDefault();
+    closeUploadForm();
+  }
+};
 
-  document.addEventListener('keydown', currentEscHandler);
+const attachEscapeHandler = (handler) => {
+  document.addEventListener('keydown', handler);
+};
+
+const openUploadForm = () => {
+  showModal();
+  blockPageScroll();
+
+  currentEscHandler = createEscapeHandler();
+  attachEscapeHandler(currentEscHandler);
 };
 
 const onFileInputChange = () => {
