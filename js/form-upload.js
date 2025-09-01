@@ -1,4 +1,6 @@
 import { isEscapeKey } from './utils.js';
+import { resetScale } from './scale-controller.js';
+import { resetEffects } from './effects-controller.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
 const imgUploadInput = document.querySelector('.img-upload__input');
@@ -24,8 +26,10 @@ const closeUploadForm = () => {
   }
 
   imgUploadForm.reset();
-
   imgUploadInput.value = '';
+
+  resetScale();
+  resetEffects();
 };
 
 const showModal = () => {
