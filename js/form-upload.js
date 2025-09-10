@@ -1,6 +1,8 @@
 import { isEscapeKey } from './utils.js';
 import { resetScale } from './scale-controller.js';
 import { resetEffects } from './effects-controller.js';
+import { sendData } from './api-client.js';
+import { showSuccessMessage, showErrorMessage } from './message-manager.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
 const imgUploadInput = document.querySelector('.img-upload__input');
@@ -8,6 +10,7 @@ const imgUploadOverlay = document.querySelector('.img-upload__overlay');
 const imgUploadCancel = document.querySelector('.img-upload__cancel');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
+const submitButton = document.querySelector('.img-upload__submit');
 const body = document.body;
 
 if (!imgUploadForm || !imgUploadInput || !imgUploadOverlay) {
@@ -15,6 +18,19 @@ if (!imgUploadForm || !imgUploadInput || !imgUploadOverlay) {
 }
 
 let currentEscHandler = null;
+
+const toggleSubmitButton = (disabled) => {
+  submitButton.disabled = disabled;
+  submitButton.textContent = disabled ? 'Отправляю...' : 'Опубликовать';
+};
+
+const resetForm = () => {
+  imgUploadForm.reset();
+  imgUploadInput.value = '';
+  resetScale();
+  resetEffects();
+  toggleSubmitButton(false);
+};
 
 const closeUploadForm = () => {
   imgUploadOverlay.classList.add('hidden');
@@ -25,11 +41,7 @@ const closeUploadForm = () => {
     currentEscHandler = null;
   }
 
-  imgUploadForm.reset();
-  imgUploadInput.value = '';
-
-  resetScale();
-  resetEffects();
+  resetForm();
 };
 
 const showModal = () => {
@@ -54,9 +66,26 @@ const attachEscapeHandler = (handler) => {
 
 const openUploadForm = () => {
   showModal();
-
   currentEscHandler = createEscapeHandler();
   attachEscapeHandler(currentEscHandler);
+};
+
+const onFormSubmit = async (evt) => {
+  evt.preventDefault();
+
+  const formData = new FormData(evt.target);
+
+  toggleSubmitButton(true);
+
+  try {
+    await sendData(formData);
+    closeUploadForm();
+    showSuccessMessage();
+  } catch (error) {
+    showErrorMessage();
+  } finally {
+    toggleSubmitButton(false);
+  }
 };
 
 const onFileInputChange = () => {
@@ -74,5 +103,7 @@ if (imgUploadInput) {
 if (imgUploadCancel) {
   imgUploadCancel.addEventListener('click', onCancelButtonClick);
 }
+
+imgUploadForm.addEventListener('submit', onFormSubmit);
 
 export { openUploadForm, closeUploadForm };

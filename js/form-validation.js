@@ -16,6 +16,7 @@ const pristineConfig = {
 };
 
 const pristine = new Pristine(imgUploadForm, pristineConfig);
+
 const parseHashtags = (value) => {
   if (!value.trim()) {
     return [];
@@ -25,6 +26,7 @@ const parseHashtags = (value) => {
 
 const validateHashtags = (value) => {
   const hashtags = parseHashtags(value);
+
   if (hashtags.length === 0) {
     return true;
   }
@@ -58,6 +60,7 @@ const validateHashtagUniqueness = (hashtags) => {
 
 const validateHashtagFormat = (hashtags) => {
   const invalidHashtag = hashtags.find((hashtag) => !HASHTAG_REGEX.test(hashtag));
+
   if (!invalidHashtag) {
     return null;
   }
@@ -65,38 +68,41 @@ const validateHashtagFormat = (hashtags) => {
   if (!invalidHashtag.startsWith('#')) {
     return 'Хэштег должен начинаться с символа #';
   }
+
   if (invalidHashtag === '#') {
     return 'Хэш-тег не может состоять только из одной решётки';
   }
+
   if (invalidHashtag.length > 20) {
     return 'Максимальная длина одного хэш-тега 20 символов, включая решётку';
   }
+
   return 'Хэштег содержит недопустимые символы';
 };
 
 const getHashtagErrorMessage = (value) => {
   const hashtags = parseHashtags(value);
+
   if (hashtags.length === 0) {
     return '';
   }
 
   return validateHashtagCount(hashtags) ||
-    validateHashtagUniqueness(hashtags) || validateHashtagFormat(hashtags) || '';
+         validateHashtagUniqueness(hashtags) ||
+         validateHashtagFormat(hashtags) ||
+         '';
 };
 
 const validateDescription = (value) => value.length <= MAX_DESCRIPTION_LENGTH;
 
-const getDescriptionErrorMessage = () => `Длина комментария не может составлять больше ${MAX_DESCRIPTION_LENGTH} символов`;
+const getDescriptionErrorMessage = () =>
+  `Длина комментария не может составлять больше ${MAX_DESCRIPTION_LENGTH} символов`;
 
-if (!hashtagsInput) {
-  throw new Error ('Поле хэштегов не найдено - валидация недоступна');
-} else {
+if (hashtagsInput) {
   pristine.addValidator(hashtagsInput, validateHashtags, getHashtagErrorMessage);
 }
 
-if (!descriptionInput) {
-  throw new Error ('Поле описания не найдено - валидация недоступна');
-} else {
+if (descriptionInput) {
   pristine.addValidator(descriptionInput, validateDescription, getDescriptionErrorMessage);
 }
 
