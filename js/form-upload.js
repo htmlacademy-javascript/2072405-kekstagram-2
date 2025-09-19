@@ -18,6 +18,7 @@ if (!imgUploadForm || !imgUploadInput || !imgUploadOverlay) {
 }
 
 let currentEscHandler = null;
+let isSubmitting = false;
 
 const toggleSubmitButton = (disabled) => {
   submitButton.disabled = disabled;
@@ -73,8 +74,18 @@ const openUploadForm = () => {
 const onFormSubmit = async (evt) => {
   evt.preventDefault();
 
+  if (isSubmitting) {
+    return;
+  }
+
+  if (!imgUploadInput.files.length) {
+    showErrorMessage();
+    return;
+  }
+
   const formData = new FormData(evt.target);
 
+  isSubmitting = true;
   toggleSubmitButton(true);
 
   try {
@@ -84,6 +95,7 @@ const onFormSubmit = async (evt) => {
   } catch (error) {
     showErrorMessage();
   } finally {
+    isSubmitting = false;
     toggleSubmitButton(false);
   }
 };

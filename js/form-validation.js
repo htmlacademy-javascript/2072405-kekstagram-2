@@ -17,94 +17,54 @@ const pristineConfig = {
 
 const pristine = new Pristine(imgUploadForm, pristineConfig);
 
-const parseHashtags = (value) => {
-  if (!value.trim()) {
-    return [];
-  }
-  return value.trim().toLowerCase().split(/\s+/);
-};
+const validateForm = () => {
+  const hashtagsValue = hashtagsInput.value.trim();
+  const descriptionValue = descriptionInput.value;
 
-const validateHashtags = (value) => {
-  const hashtags = parseHashtags(value);
-
-  if (hashtags.length === 0) {
-    return true;
+  // Валидация описания
+  if (descriptionValue.length > MAX_DESCRIPTION_LENGTH) {
+    return `Длина комментария не может составлять больше ${MAX_DESCRIPTION_LENGTH} символов`;
   }
 
-  if (hashtags.length > MAX_HASHTAGS_COUNT) {
-    return false;
+  // Валидация хэштегов
+  if (!hashtagsValue) {
+    return ''; // Пустые хэштеги разрешены
   }
 
-  const uniqueHashtags = new Set(hashtags);
-  if (uniqueHashtags.size !== hashtags.length) {
-    return false;
-  }
+  const hashtags = hashtagsValue.toLowerCase().split(/\s+/);
 
-  return hashtags.every((hashtag) => HASHTAG_REGEX.test(hashtag));
-};
-
-const validateHashtagCount = (hashtags) => {
   if (hashtags.length > MAX_HASHTAGS_COUNT) {
     return `Нельзя указать больше ${MAX_HASHTAGS_COUNT} хэштегов`;
   }
-  return null;
-};
 
-const validateHashtagUniqueness = (hashtags) => {
   const uniqueHashtags = new Set(hashtags);
   if (uniqueHashtags.size !== hashtags.length) {
     return 'Хэштеги не должны повторяться';
   }
-  return null;
+
+  for (const hashtag of hashtags) {
+    if (!HASHTAG_REGEX.test(hashtag)) {
+      if (!hashtag.startsWith('#')) {
+        return 'Хэштег должен начинаться с символа #';
+      }
+      if (hashtag === '#') {
+        return 'Хэш-тег не может состоять только из решётки';
+      }
+      if (hashtag.length > 20) {
+        return 'Максимальная длина хэш-тега 20 символов';
+      }
+      return 'Хэштег содержит недопустимые символы';
+    }
+  }
+
+  return '';
 };
 
-const validateHashtagFormat = (hashtags) => {
-  const invalidHashtag = hashtags.find((hashtag) => !HASHTAG_REGEX.test(hashtag));
+const isFormValid = () => validateForm() === '';
+const getFormErrorMessage = () => validateForm();
 
-  if (!invalidHashtag) {
-    return null;
-  }
-
-  if (!invalidHashtag.startsWith('#')) {
-    return 'Хэштег должен начинаться с символа #';
-  }
-
-  if (invalidHashtag === '#') {
-    return 'Хэш-тег не может состоять только из одной решётки';
-  }
-
-  if (invalidHashtag.length > 20) {
-    return 'Максимальная длина одного хэш-тега 20 символов, включая решётку';
-  }
-
-  return 'Хэштег содержит недопустимые символы';
-};
-
-const getHashtagErrorMessage = (value) => {
-  const hashtags = parseHashtags(value);
-
-  if (hashtags.length === 0) {
-    return '';
-  }
-
-  return validateHashtagCount(hashtags) ||
-         validateHashtagUniqueness(hashtags) ||
-         validateHashtagFormat(hashtags) ||
-         '';
-};
-
-const validateDescription = (value) => value.length <= MAX_DESCRIPTION_LENGTH;
-
-const getDescriptionErrorMessage = () =>
-  `Длина комментария не может составлять больше ${MAX_DESCRIPTION_LENGTH} символов`;
-
-if (hashtagsInput) {
-  pristine.addValidator(hashtagsInput, validateHashtags, getHashtagErrorMessage);
-}
-
-if (descriptionInput) {
-  pristine.addValidator(descriptionInput, validateDescription, getDescriptionErrorMessage);
-}
+pristine.addValidator(hashtagsInput, isFormValid, getFormErrorMessage);
+pristine.addValidator(descriptionInput, isFormValid, getFormErrorMessage);
 
 const onFormSubmit = (evt) => {
   if (!pristine.validate()) {

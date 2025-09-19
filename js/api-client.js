@@ -1,14 +1,30 @@
 import { BASE_URL } from './constants.js';
 import { checkResponse } from './utils.js';
 
-const getData = async () => {
+const handleError = (operation, originalError) => {
+  const errorInfo = {
+    operation,
+    message: originalError.message,
+    status: originalError.status || 'unknown',
+    timestamp: new Date().toISOString()
+  };
+
+  // eslint-disable-next-line no-console
+  console.error('ERROR DETAILS:', errorInfo);
+
+  const userMessage = `Ошибка при ${operation}: ${originalError.message}`;
+  throw new Error(userMessage);
+};
+
+const getData = async (endpoint = '/data') => {
   try {
-    const response = await fetch(`${BASE_URL}/data`);
+    const response = await fetch(`${BASE_URL}${endpoint}`);
     return await checkResponse(response);
   } catch (error) {
-    throw new Error(`Ошибка при загрузке данных: ${error.message}`);
+    handleError('загрузке данных', error);
   }
 };
+
 
 const sendData = async (formData) => {
   try {
@@ -18,7 +34,7 @@ const sendData = async (formData) => {
     });
     return await checkResponse(response);
   } catch (error) {
-    throw new Error(`Ошибка при отправке данных: ${error.message}`);
+    handleError('отправке данных', error);
   }
 };
 

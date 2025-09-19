@@ -5,20 +5,20 @@ const successTemplate = document.querySelector('#success').content.querySelector
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 const dataErrorTemplate = document.querySelector('#data-error').content.querySelector('.data-error');
 
-const showSuccessMessage = () => {
-  const successMessage = successTemplate.cloneNode(true);
-  body.appendChild(successMessage);
+const showMessage = (template, innerSelector, buttonSelector) => {
+  const message = template.cloneNode(true);
+  body.appendChild(message);
 
   const controller = new AbortController();
   const { signal } = controller;
 
   const closeMessage = () => {
-    successMessage.remove();
+    message.remove();
     controller.abort();
   };
 
-  const successButton = successMessage.querySelector('.success__button');
-  successButton.addEventListener('click', closeMessage);
+  const button = message.querySelector(buttonSelector);
+  button.addEventListener('click', closeMessage);
 
   document.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
@@ -27,39 +27,14 @@ const showSuccessMessage = () => {
   }, { signal });
 
   document.addEventListener('click', (evt) => {
-    if (!successMessage.querySelector('.success__inner').contains(evt.target)) {
+    if (!message.querySelector(innerSelector).contains(evt.target)) {
       closeMessage();
     }
   }, { signal });
 };
 
-const showErrorMessage = () => {
-  const errorMessage = errorTemplate.cloneNode(true);
-  body.appendChild(errorMessage);
-
-  const controller = new AbortController();
-  const { signal } = controller;
-
-  const closeMessage = () => {
-    errorMessage.remove();
-    controller.abort();
-  };
-
-  const errorButton = errorMessage.querySelector('.error__button');
-  errorButton.addEventListener('click', closeMessage);
-
-  document.addEventListener('keydown', (evt) => {
-    if (isEscapeKey(evt)) {
-      closeMessage();
-    }
-  }, { signal });
-
-  document.addEventListener('click', (evt) => {
-    if (!errorMessage.querySelector('.error__inner').contains(evt.target)) {
-      closeMessage();
-    }
-  }, { signal });
-};
+const showSuccessMessage = () => showMessage(successTemplate, '.success__inner', '.success__button');
+const showErrorMessage = () => showMessage(errorTemplate, '.error__inner', '.error__button');
 
 const showDataErrorMessage = () => {
   const dataErrorMessage = dataErrorTemplate.cloneNode(true);
