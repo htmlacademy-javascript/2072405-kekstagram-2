@@ -6,6 +6,12 @@ const errorTemplate = document.querySelector('#error').content.querySelector('.e
 const dataErrorTemplate = document.querySelector('#data-error').content.querySelector('.data-error');
 
 const showMessage = (template, innerSelector, buttonSelector) => {
+  if (!template) {
+    // eslint-disable-next-line no-console
+    console.error('Шаблон сообщения не найден');
+    return;
+  }
+
   const message = template.cloneNode(true);
   body.appendChild(message);
 
@@ -13,7 +19,9 @@ const showMessage = (template, innerSelector, buttonSelector) => {
   const { signal } = controller;
 
   const closeMessage = () => {
-    message.remove();
+    if (message.parentNode) {
+      message.remove();
+    }
     controller.abort();
   };
 
@@ -37,11 +45,19 @@ const showSuccessMessage = () => showMessage(successTemplate, '.success__inner',
 const showErrorMessage = () => showMessage(errorTemplate, '.error__inner', '.error__button');
 
 const showDataErrorMessage = () => {
+  if (!dataErrorTemplate) {
+    // eslint-disable-next-line no-console
+    console.error('Шаблон сообщения об ошибке данных не найден');
+    return;
+  }
+
   const dataErrorMessage = dataErrorTemplate.cloneNode(true);
   body.appendChild(dataErrorMessage);
 
   setTimeout(() => {
-    dataErrorMessage.remove();
+    if (dataErrorMessage.parentNode) {
+      dataErrorMessage.remove();
+    }
   }, 5000);
 };
 

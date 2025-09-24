@@ -17,18 +17,32 @@ const pristineConfig = {
 
 const pristine = new Pristine(imgUploadForm, pristineConfig);
 
-const validateForm = () => {
-  const hashtagsValue = hashtagsInput.value.trim();
-  const descriptionValue = descriptionInput.value;
+const validateHashtags = (value) => {
+  const hashtagsValue = value.trim();
 
-  // Валидация описания
-  if (descriptionValue.length > MAX_DESCRIPTION_LENGTH) {
-    return `Длина комментария не может составлять больше ${MAX_DESCRIPTION_LENGTH} символов`;
+  if (!hashtagsValue) {
+    return true;
   }
 
-  // Валидация хэштегов
+  const hashtags = hashtagsValue.toLowerCase().split(/\s+/);
+
+  if (hashtags.length > MAX_HASHTAGS_COUNT) {
+    return false;
+  }
+
+  const uniqueHashtags = new Set(hashtags);
+  if (uniqueHashtags.size !== hashtags.length) {
+    return false;
+  }
+
+  return hashtags.every((hashtag) => HASHTAG_REGEX.test(hashtag));
+};
+
+const getHashtagError = (value) => {
+  const hashtagsValue = value.trim();
+
   if (!hashtagsValue) {
-    return ''; // Пустые хэштеги разрешены
+    return '';
   }
 
   const hashtags = hashtagsValue.toLowerCase().split(/\s+/);
@@ -60,18 +74,24 @@ const validateForm = () => {
   return '';
 };
 
-const isFormValid = () => validateForm() === '';
-const getFormErrorMessage = () => validateForm();
+const validateDescription = (value) => value.length <= MAX_DESCRIPTION_LENGTH;
 
-pristine.addValidator(hashtagsInput, isFormValid, getFormErrorMessage);
-pristine.addValidator(descriptionInput, isFormValid, getFormErrorMessage);
+const getDescriptionError = () =>
+  `Длина комментария не может составлять больше ${MAX_DESCRIPTION_LENGTH} символов`;
+
+if (hashtagsInput) {
+  pristine.addValidator(hashtagsInput, validateHashtags, getHashtagError);
+}
+
+if (descriptionInput) {
+  pristine.addValidator(descriptionInput, validateDescription, getDescriptionError);
+}
 
 const onFormSubmit = (evt) => {
   if (!pristine.validate()) {
     evt.preventDefault();
   }
 };
-
 imgUploadForm.addEventListener('submit', onFormSubmit);
 
 export { pristine };
