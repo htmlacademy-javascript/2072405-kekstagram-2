@@ -72,5 +72,7 @@ export const MAX_HASHTAGS_COUNT = 5;
 export const MAX_HASHTAG_LENGTH = 20;
 export const MAX_DESCRIPTION_LENGTH = 140;
 export const BASE_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
+export const RANDOM_PHOTOS_COUNT = 10;
+export const DEBOUNCE_DELAY = 500;
 
 
