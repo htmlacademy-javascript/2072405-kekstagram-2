@@ -1,4 +1,4 @@
-import { HASHTAG_REGEX, MAX_HASHTAGS_COUNT, MAX_DESCRIPTION_LENGTH} from './constants.js';
+import { HASHTAG_REGEX, MAX_HASHTAGS_COUNT, MAX_HASHTAG_LENGTH, MAX_DESCRIPTION_LENGTH} from './constants.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
 const hashtagsInput = document.querySelector('.text__hashtags');
@@ -17,14 +17,22 @@ const pristineConfig = {
 
 const pristine = new Pristine(imgUploadForm, pristineConfig);
 
-const validateHashtags = (value) => {
+const parseHashtags = (value) => {
   const hashtagsValue = value.trim();
 
   if (!hashtagsValue) {
-    return true;
+    return [];
   }
 
-  const hashtags = hashtagsValue.toLowerCase().split(/\s+/);
+  return hashtagsValue.toLowerCase().split(/\s+/);
+};
+
+const validateHashtags = (value) => {
+  const hashtags = parseHashtags(value);
+
+  if (hashtags.length === 0) {
+    return true;
+  }
 
   if (hashtags.length > MAX_HASHTAGS_COUNT) {
     return false;
@@ -39,13 +47,11 @@ const validateHashtags = (value) => {
 };
 
 const getHashtagError = (value) => {
-  const hashtagsValue = value.trim();
+  const hashtags = parseHashtags(value);
 
-  if (!hashtagsValue) {
+  if (hashtags.length === 0) {
     return '';
   }
-
-  const hashtags = hashtagsValue.toLowerCase().split(/\s+/);
 
   if (hashtags.length > MAX_HASHTAGS_COUNT) {
     return `Нельзя указать больше ${MAX_HASHTAGS_COUNT} хэштегов`;
@@ -64,8 +70,8 @@ const getHashtagError = (value) => {
       if (hashtag === '#') {
         return 'Хэш-тег не может состоять только из решётки';
       }
-      if (hashtag.length > 20) {
-        return 'Максимальная длина хэш-тега 20 символов';
+      if (hashtag.length > MAX_HASHTAG_LENGTH) {
+        return `Максимальная длина хэш-тега ${MAX_HASHTAG_LENGTH} символов`;
       }
       return 'Хэштег содержит недопустимые символы';
     }

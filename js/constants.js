@@ -69,6 +69,7 @@ export const DEFAULT_DESCRIPTION = 'Фото без описания';
 export const COMMENTS_STEP = 5;
 export const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 export const MAX_HASHTAGS_COUNT = 5;
+export const MAX_HASHTAG_LENGTH = 20;
 export const MAX_DESCRIPTION_LENGTH = 140;
 export const BASE_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
 
