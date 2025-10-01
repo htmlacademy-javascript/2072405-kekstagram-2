@@ -31,7 +31,9 @@ const getRandomPhotos = (photos) => {
 };
 
 const getDiscussedPhotos = (photos) =>
-  photos.slice().sort((a,b) => b.comments.length - a.comments.length);
+  photos.slice().sort((a, b) =>
+    (b.comments?.length || 0) - (a.comments?.length || 0)
+  );
 
 const updateActiveFilter = (activeFilter) => {
   document.querySelectorAll('.img-filters__button').forEach((button) => {
