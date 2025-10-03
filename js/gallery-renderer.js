@@ -39,3 +39,8 @@ export const renderThumbnails = (photos) => {
 
   picturesContainer.appendChild(fragment);
 };
+
+export const clearThumbnails = () => {
+  const pictures = picturesContainer.querySelectorAll('.picture');
+  pictures.forEach((picture) => picture.remove());
+};
