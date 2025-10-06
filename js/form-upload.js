@@ -11,31 +11,78 @@ const imgUploadCancel = document.querySelector('.img-upload__cancel');
 const hashtagsInput = document.querySelector('.text__hashtags');
 const descriptionInput = document.querySelector('.text__description');
 const submitButton = document.querySelector('.img-upload__submit');
+const imgUploadPreview = document.querySelector('.img-upload__preview img');
+const effectsPreviews = document.querySelectorAll('.effects__preview');
 const body = document.body;
 
 if (!imgUploadForm || !imgUploadInput || !imgUploadOverlay) {
   throw new Error('Не найдены необходимые элементы формы загрузки');
 }
 
+if (!imgUploadPreview) {
+  throw new Error('Не найден элемент превью изображения');
+}
+
 let currentEscHandler = null;
 let isSubmitting = false;
 
-const toggleSubmitButton = (disabled) => {
-  submitButton.disabled = disabled;
-  submitButton.textContent = disabled ? 'Отправляю...' : 'Опубликовать';
+const setModalState = (isOpen) => {
+  if (isOpen) {
+    imgUploadOverlay.classList.remove('hidden');
+    body.classList.add('modal-open');
+  } else {
+    imgUploadOverlay.classList.add('hidden');
+    body.classList.remove('modal-open');
+  }
+};
+
+const setSubmittingState = (submitting) => {
+  isSubmitting = submitting;
+  submitButton.disabled = submitting;
+  submitButton.textContent = submitting ? 'Отправляю...' : 'Опубликовать';
+};
+
+const loadImage = (file) => {
+  if (!file) {
+    return;
+  }
+
+  const fileReader = new FileReader();
+
+  fileReader.addEventListener('load', () => {
+    const imageUrl = fileReader.result;
+
+    imgUploadPreview.src = imageUrl;
+
+    if (effectsPreviews.length > 0) {
+      effectsPreviews.forEach((preview) => {
+        preview.style.backgroundImage = `url(${imageUrl})`;
+      });
+    }
+  });
+
+  fileReader.readAsDataURL(file);
 };
 
 const resetForm = () => {
   imgUploadForm.reset();
   imgUploadInput.value = '';
+
+  imgUploadPreview.src = 'img/upload-default-image.jpg';
+
+  if (effectsPreviews.length > 0) {
+    effectsPreviews.forEach((preview) => {
+      preview.style.backgroundImage = '';
+    });
+  }
+
   resetScale();
   resetEffects();
-  toggleSubmitButton(false);
+  setSubmittingState(false);
 };
 
 const closeUploadForm = () => {
-  imgUploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
+  setModalState(false);
 
   if (currentEscHandler) {
     document.removeEventListener('keydown', currentEscHandler);
@@ -45,30 +92,22 @@ const closeUploadForm = () => {
   resetForm();
 };
 
-const showModal = () => {
-  imgUploadOverlay.classList.remove('hidden');
-  body.classList.add('modal-open');
-};
-
 const createEscapeHandler = () => (evt) => {
   if (isEscapeKey(evt)) {
     if (document.activeElement === hashtagsInput ||
-          document.activeElement === descriptionInput) {
+        document.activeElement === descriptionInput) {
       return;
     }
+
     evt.preventDefault();
     closeUploadForm();
   }
 };
 
-const attachEscapeHandler = (handler) => {
-  document.addEventListener('keydown', handler);
-};
-
 const openUploadForm = () => {
-  showModal();
+  setModalState(true);
   currentEscHandler = createEscapeHandler();
-  attachEscapeHandler(currentEscHandler);
+  document.addEventListener('keydown', currentEscHandler);
 };
 
 const onFormSubmit = async (evt) => {
@@ -84,9 +123,7 @@ const onFormSubmit = async (evt) => {
   }
 
   const formData = new FormData(evt.target);
-
-  isSubmitting = true;
-  toggleSubmitButton(true);
+  setSubmittingState(true);
 
   try {
     await sendData(formData);
@@ -95,17 +132,14 @@ const onFormSubmit = async (evt) => {
   } catch (error) {
     showErrorMessage();
   } finally {
-    isSubmitting = false;
-    toggleSubmitButton(false);
+    setSubmittingState(false);
   }
 };
 
 const onFileInputChange = () => {
+  const file = imgUploadInput.files[0];
+  loadImage(file);
   openUploadForm();
-};
-
-const onCancelButtonClick = () => {
-  closeUploadForm();
 };
 
 if (imgUploadInput) {
@@ -113,7 +147,7 @@ if (imgUploadInput) {
 }
 
 if (imgUploadCancel) {
-  imgUploadCancel.addEventListener('click', onCancelButtonClick);
+  imgUploadCancel.addEventListener('click', closeUploadForm);
 }
 
 imgUploadForm.addEventListener('submit', onFormSubmit);
