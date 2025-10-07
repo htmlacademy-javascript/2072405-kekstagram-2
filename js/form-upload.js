@@ -3,6 +3,7 @@ import { resetScale } from './scale-controller.js';
 import { resetEffects } from './effects-controller.js';
 import { sendData } from './api-client.js';
 import { showSuccessMessage, showErrorMessage } from './message-manager.js';
+import { FILE_VALIDATION, DEFAULT_UPLOAD_IMAGE } from './constants.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
 const imgUploadInput = document.querySelector('.img-upload__input');
@@ -36,6 +37,28 @@ const setModalState = (isOpen) => {
   }
 };
 
+const validateFile = (file) => {
+  if (!file) {
+    return { isValid: false, error: 'Файл не выбран' };
+  }
+
+  if (!FILE_VALIDATION.ALLOWED_TYPES.includes(file.type)) {
+    return {
+      isValid: false,
+      error: 'Загрузите JPEG или PNG файл'
+    };
+  }
+
+  if (file.size > FILE_VALIDATION.MAX_SIZE) {
+    return {
+      isValid: false,
+      error: 'Размер файла до 20 МБ'
+    };
+  }
+
+  return { isValid: true };
+};
+
 const setSubmittingState = (submitting) => {
   isSubmitting = submitting;
   submitButton.disabled = submitting;
@@ -43,7 +66,10 @@ const setSubmittingState = (submitting) => {
 };
 
 const loadImage = (file) => {
-  if (!file) {
+  // Валидация файла
+  const validation = validateFile(file);
+  if (!validation.isValid) {
+    showErrorMessage(validation.error);
     return;
   }
 
@@ -61,6 +87,10 @@ const loadImage = (file) => {
     }
   });
 
+  fileReader.addEventListener('error', () => {
+    showErrorMessage('Ошибка при чтении файла. Попробуйте выбрать другой файл.');
+  });
+
   fileReader.readAsDataURL(file);
 };
 
@@ -68,7 +98,7 @@ const resetForm = () => {
   imgUploadForm.reset();
   imgUploadInput.value = '';
 
-  imgUploadPreview.src = 'img/upload-default-image.jpg';
+  imgUploadPreview.src = DEFAULT_UPLOAD_IMAGE;
 
   if (effectsPreviews.length > 0) {
     effectsPreviews.forEach((preview) => {
@@ -138,6 +168,14 @@ const onFormSubmit = async (evt) => {
 
 const onFileInputChange = () => {
   const file = imgUploadInput.files[0];
+
+  const validation = validateFile(file);
+  if (!validation.isValid) {
+    showErrorMessage(validation.error);
+    imgUploadInput.value = '';
+    return;
+  }
+
   loadImage(file);
   openUploadForm();
 };
