@@ -64,6 +64,11 @@ export const EFFECTS = {
   }
 };
 
+export const FILE_VALIDATION = {
+  ALLOWED_TYPES: ['image/jpeg', 'image/png'],
+  MAX_SIZE: 20 * 1024 * 1024,
+};
+
 export const DEFAULT_IMAGE = 'img/placeholder.jpg';
 export const DEFAULT_DESCRIPTION = 'Фото без описания';
 export const COMMENTS_STEP = 5;
@@ -74,5 +79,6 @@ export const MAX_DESCRIPTION_LENGTH = 140;
 export const BASE_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
 export const RANDOM_PHOTOS_COUNT = 10;
 export const DEBOUNCE_DELAY = 500;
+export const DEFAULT_UPLOAD_IMAGE = 'img/upload-default-image.jpg';
 
 
