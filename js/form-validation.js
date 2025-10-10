@@ -93,11 +93,4 @@ if (descriptionInput) {
   pristine.addValidator(descriptionInput, validateDescription, getDescriptionError);
 }
 
-const onFormSubmit = (evt) => {
-  if (!pristine.validate()) {
-    evt.preventDefault();
-  }
-};
-imgUploadForm.addEventListener('submit', onFormSubmit);
-
 export { pristine };

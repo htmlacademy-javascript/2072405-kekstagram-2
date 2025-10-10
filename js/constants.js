@@ -66,7 +66,7 @@ export const EFFECTS = {
 
 export const FILE_VALIDATION = {
   ALLOWED_TYPES: ['image/jpeg', 'image/png'],
-  MAX_SIZE: 20 * 1024 * 1024,
+  MAX_SIZE: 5 * 1024 * 1024,
 };
 
 export const DEFAULT_IMAGE = 'img/placeholder.jpg';
