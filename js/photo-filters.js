@@ -1,6 +1,6 @@
 import { renderThumbnails, clearThumbnails } from './gallery-renderer.js';
 import { getRandomArrayElement, debounce } from './utils.js';
-import { RANDOM_PHOTOS_COUNT } from './constants.js';
+import { RANDOM_PHOTOS_COUNT, DEBOUNCE_DELAY } from './constants.js';
 import { resetScale } from './scale-controller.js';
 import { resetEffects } from './effects-controller.js';
 
@@ -69,7 +69,7 @@ const applyFilter = (filterId) => {
   renderThumbnails(filteredPhotos);
 };
 
-const debouncedApplyFilter = debounce(applyFilter);
+const debouncedApplyFilter = debounce(applyFilter, DEBOUNCE_DELAY);
 
 const onFilterChange = (evt) => {
   if (evt.target.classList.contains('img-filters__button')) {

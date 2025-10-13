@@ -35,14 +35,15 @@ const applyEffect = () => {
 
   if (currentEffect === 'none') {
     imgUploadPreview.style.filter = '';
+    effectLevelValue.value = '';
     return;
   }
 
   const sliderValue = effectLevelSlider.noUiSlider.get();
-  const filterValue = effect.min + (sliderValue / 100) * (effect.max - effect.min);
+  const normalizedValue = effect.min + (sliderValue / 100) * (effect.max - effect.min);
 
-  imgUploadPreview.style.filter = `${effect.style}(${filterValue}${effect.unit})`;
-  effectLevelValue.value = sliderValue;
+  imgUploadPreview.style.filter = `${effect.style}(${normalizedValue}${effect.unit})`;
+  effectLevelValue.value = parseFloat(normalizedValue.toFixed(1)).toString();
 };
 
 const updateSlider = () => {

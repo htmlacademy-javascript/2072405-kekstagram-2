@@ -116,9 +116,11 @@ const resetForm = () => {
   resetScale();
   resetEffects();
   setSubmittingState(false);
+  pristine.reset();
 };
 
 const closeUploadForm = () => {
+  pristine.reset();
   setModalState(false);
 
   if (currentEscHandler) {

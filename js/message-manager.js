@@ -31,9 +31,11 @@ const showMessage = (template, innerSelector, buttonSelector) => {
 
   document.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      evt.stopPropagation();
       closeMessage();
     }
-  }, { signal });
+  }, { signal, capture: true });
 
   document.addEventListener('click', (evt) => {
     if (!message.querySelector(innerSelector).contains(evt.target)) {
