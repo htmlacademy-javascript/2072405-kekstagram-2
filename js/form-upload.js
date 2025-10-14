@@ -46,26 +46,18 @@ const setSubmittingState = (submitting) => {
 
 const validateFile = (file) => {
   if (!file) {
-    // eslint-disable-next-line no-console
-    console.warn('Валидация файла: файл не выбран');
     return { isValid: false, reason: 'no_file' };
   }
 
   if (!FILE_VALIDATION.ALLOWED_TYPES.includes(file.type)) {
-    // eslint-disable-next-line no-console
-    console.warn(`Валидация файла: неподдерживаемый тип "${file.type}". Разрешены: ${FILE_VALIDATION.ALLOWED_TYPES.join(', ')}`);
     return { isValid: false, reason: 'invalid_type' };
   }
 
 
   if (file.size > FILE_VALIDATION.MAX_SIZE) {
-    // eslint-disable-next-line no-console
-    console.warn(`Валидация файла: размер ${(file.size / 1024 / 1024).toFixed(2)}MB превышает лимит ${FILE_VALIDATION.MAX_SIZE / 1024 / 1024}MB`);
     return { isValid: false, reason: 'file_too_large' };
   }
 
-  // eslint-disable-next-line no-console
-  console.log(`Валидация файла: ✓ OK. Тип: ${file.type}, размер: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
   return { isValid: true };
 };
 
@@ -80,8 +72,6 @@ const loadImage = (file) => {
 
   fileReader.addEventListener('load', () => {
     const imageUrl = fileReader.result;
-    // eslint-disable-next-line no-console
-    console.log('FileReader: ✓ изображение успешно загружено для превью');
 
     imgUploadPreview.src = imageUrl;
 
@@ -93,8 +83,6 @@ const loadImage = (file) => {
   });
 
   fileReader.addEventListener('error', () => {
-    // eslint-disable-next-line no-console
-    console.error('FileReader: ✗ ошибка при чтении файла', fileReader.error);
     showErrorMessage();
   });
 
@@ -157,14 +145,10 @@ const onFormSubmit = async (evt) => {
   }
 
   if (!pristine.validate()) {
-    // eslint-disable-next-line no-console
-    console.warn('Отправка формы: ✗ валидация Pristine не прошла (хештеги/комментарий)');
     return;
   }
 
   if (!imgUploadInput.files.length) {
-    // eslint-disable-next-line no-console
-    console.warn('Отправка формы: ✗ файл не выбран');
     showErrorMessage();
     return;
   }
@@ -174,13 +158,9 @@ const onFormSubmit = async (evt) => {
 
   try {
     await sendData(formData);
-    // eslint-disable-next-line no-console
-    console.log('Отправка формы: ✓ успешно отправлено на сервер');
     closeUploadForm();
     showSuccessMessage();
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Отправка формы: ✗ ошибка при отправке', error);
     showErrorMessage();
   } finally {
     setSubmittingState(false);
@@ -189,12 +169,6 @@ const onFormSubmit = async (evt) => {
 
 const onFileInputChange = () => {
   const file = imgUploadInput.files[0];
-
-  // eslint-disable-next-line no-console
-  console.log('Выбор файла:', file ?
-    `"${file.name}" (${file.type}, ${(file.size / 1024).toFixed(2)}KB)` :
-    'файл не выбран'
-  );
 
   loadImage(file);
   openUploadForm();

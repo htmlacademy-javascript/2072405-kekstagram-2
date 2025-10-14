@@ -8,8 +8,6 @@ const dataErrorTemplate = document.querySelector('#data-error').content.querySel
 
 const showMessage = (template, innerSelector, buttonSelector) => {
   if (!template) {
-    // eslint-disable-next-line no-console
-    console.error('Шаблон сообщения не найден');
     return;
   }
 
@@ -50,8 +48,6 @@ const showErrorMessage = () => showMessage(errorTemplate, '.error__inner', '.err
 
 const showDataErrorMessage = () => {
   if (!dataErrorTemplate) {
-    // eslint-disable-next-line no-console
-    console.error('Шаблон ошибки данных не найден');
     return;
   }
 
