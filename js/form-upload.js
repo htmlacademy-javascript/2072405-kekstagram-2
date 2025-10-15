@@ -3,6 +3,7 @@ import { resetScale } from './scale-controller.js';
 import { resetEffects } from './effects-controller.js';
 import { sendData } from './api-client.js';
 import { showSuccessMessage, showErrorMessage } from './message-manager.js';
+import { pristine } from './form-validation.js';
 import { FILE_VALIDATION, DEFAULT_UPLOAD_IMAGE } from './constants.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
@@ -37,39 +38,33 @@ const setModalState = (isOpen) => {
   }
 };
 
-const validateFile = (file) => {
-  if (!file) {
-    return { isValid: false, error: 'Файл не выбран' };
-  }
-
-  if (!FILE_VALIDATION.ALLOWED_TYPES.includes(file.type)) {
-    return {
-      isValid: false,
-      error: 'Загрузите JPEG или PNG файл'
-    };
-  }
-
-  if (file.size > FILE_VALIDATION.MAX_SIZE) {
-    return {
-      isValid: false,
-      error: 'Размер файла до 20 МБ'
-    };
-  }
-
-  return { isValid: true };
-};
-
 const setSubmittingState = (submitting) => {
   isSubmitting = submitting;
   submitButton.disabled = submitting;
   submitButton.textContent = submitting ? 'Отправляю...' : 'Опубликовать';
 };
 
+const validateFile = (file) => {
+  if (!file) {
+    return { isValid: false, reason: 'no_file' };
+  }
+
+  if (!FILE_VALIDATION.ALLOWED_TYPES.includes(file.type)) {
+    return { isValid: false, reason: 'invalid_type' };
+  }
+
+
+  if (file.size > FILE_VALIDATION.MAX_SIZE) {
+    return { isValid: false, reason: 'file_too_large' };
+  }
+
+  return { isValid: true };
+};
+
 const loadImage = (file) => {
-  // Валидация файла
   const validation = validateFile(file);
   if (!validation.isValid) {
-    showErrorMessage(validation.error);
+    showErrorMessage();
     return;
   }
 
@@ -88,7 +83,7 @@ const loadImage = (file) => {
   });
 
   fileReader.addEventListener('error', () => {
-    showErrorMessage('Ошибка при чтении файла. Попробуйте выбрать другой файл.');
+    showErrorMessage();
   });
 
   fileReader.readAsDataURL(file);
@@ -109,9 +104,11 @@ const resetForm = () => {
   resetScale();
   resetEffects();
   setSubmittingState(false);
+  pristine.reset();
 };
 
 const closeUploadForm = () => {
+  pristine.reset();
   setModalState(false);
 
   if (currentEscHandler) {
@@ -147,6 +144,10 @@ const onFormSubmit = async (evt) => {
     return;
   }
 
+  if (!pristine.validate()) {
+    return;
+  }
+
   if (!imgUploadInput.files.length) {
     showErrorMessage();
     return;
@@ -168,13 +169,6 @@ const onFormSubmit = async (evt) => {
 
 const onFileInputChange = () => {
   const file = imgUploadInput.files[0];
-
-  const validation = validateFile(file);
-  if (!validation.isValid) {
-    showErrorMessage(validation.error);
-    imgUploadInput.value = '';
-    return;
-  }
 
   loadImage(file);
   openUploadForm();

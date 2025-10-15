@@ -2,18 +2,7 @@ import { BASE_URL } from './constants.js';
 import { checkResponse } from './utils.js';
 
 const handleError = (operation, originalError) => {
-  const errorInfo = {
-    operation,
-    message: originalError.message,
-    status: originalError.status || 'unknown',
-    timestamp: new Date().toISOString()
-  };
-
-  // eslint-disable-next-line no-console
-  console.error('ERROR DETAILS:', errorInfo);
-
-  const userMessage = `Ошибка при ${operation}: ${originalError.message}`;
-  throw new Error(userMessage);
+  throw new Error(`Ошибка при ${operation}: ${originalError.message}`);
 };
 
 const getData = async (endpoint = '/data') => {

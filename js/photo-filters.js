@@ -1,6 +1,8 @@
 import { renderThumbnails, clearThumbnails } from './gallery-renderer.js';
 import { getRandomArrayElement, debounce } from './utils.js';
-import { RANDOM_PHOTOS_COUNT } from './constants.js';
+import { RANDOM_PHOTOS_COUNT, DEBOUNCE_DELAY } from './constants.js';
+import { resetScale } from './scale-controller.js';
+import { resetEffects } from './effects-controller.js';
 
 const imgFilters = document.querySelector('.img-filters');
 const filterDefault = document.querySelector('#filter-default');
@@ -27,13 +29,12 @@ const getRandomPhotos = (photos) => {
     availablePhotos.splice(index, 1);
     result.push(randomPhoto);
   }
+
   return result;
 };
 
 const getDiscussedPhotos = (photos) =>
-  photos.slice().sort((a, b) =>
-    (b.comments?.length || 0) - (a.comments?.length || 0)
-  );
+  photos.slice().sort((a, b) => b.comments.length - a.comments.length);
 
 const updateActiveFilter = (activeFilter) => {
   document.querySelectorAll('.img-filters__button').forEach((button) => {
@@ -47,9 +48,12 @@ const applyFilter = (filterId) => {
     return;
   }
 
-  currentFilter = filterId;
-  let filteredPhotos;
+  resetScale();
+  resetEffects();
 
+  currentFilter = filterId;
+
+  let filteredPhotos;
   switch (filterId) {
     case 'filter-random':
       filteredPhotos = getRandomPhotos(allPhotos);
@@ -65,7 +69,7 @@ const applyFilter = (filterId) => {
   renderThumbnails(filteredPhotos);
 };
 
-const debouncedApplyFilter = debounce(applyFilter);
+const debouncedApplyFilter = debounce(applyFilter, DEBOUNCE_DELAY);
 
 const onFilterChange = (evt) => {
   if (evt.target.classList.contains('img-filters__button')) {
@@ -76,11 +80,8 @@ const onFilterChange = (evt) => {
 
 const initFilters = (photos) => {
   allPhotos = photos.slice();
-
   imgFilters.classList.remove('img-filters--inactive');
-
   imgFilters.addEventListener('click', onFilterChange);
-
   updateActiveFilter(filterDefault);
 };
 
