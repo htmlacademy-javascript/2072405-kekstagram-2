@@ -21,16 +21,16 @@ const getDefaultPhotos = (photos) => photos.slice();
 
 const getRandomPhotos = (photos) => {
   const availablePhotos = photos.slice();
-  const result = [];
+  const results = [];
 
-  while (result.length < Math.min(RANDOM_PHOTOS_COUNT, availablePhotos.length)) {
+  while (results.length < Math.min(RANDOM_PHOTOS_COUNT, availablePhotos.length)) {
     const randomPhoto = getRandomArrayElement(availablePhotos);
     const index = availablePhotos.indexOf(randomPhoto);
     availablePhotos.splice(index, 1);
-    result.push(randomPhoto);
+    results.push(randomPhoto);
   }
 
-  return result;
+  return results;
 };
 
 const getDiscussedPhotos = (photos) =>

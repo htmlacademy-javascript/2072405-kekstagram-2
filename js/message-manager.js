@@ -25,21 +25,28 @@ const showMessage = (template, innerSelector, buttonSelector) => {
   };
 
   const button = message.querySelector(buttonSelector);
-  button.addEventListener('click', closeMessage);
 
-  document.addEventListener('keydown', (evt) => {
+  const onButtonClick = () => {
+    closeMessage();
+  };
+
+  const onDocumentKeydown = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       evt.stopPropagation();
       closeMessage();
     }
-  }, { signal, capture: true });
+  };
 
-  document.addEventListener('click', (evt) => {
+  const onDocumentClick = (evt) => {
     if (!message.querySelector(innerSelector).contains(evt.target)) {
       closeMessage();
     }
-  }, { signal });
+  };
+
+  button.addEventListener('click', onButtonClick);
+  document.addEventListener('keydown', onDocumentKeydown, { signal, capture: true });
+  document.addEventListener('click', onDocumentClick, { signal });
 };
 
 const showSuccessMessage = () => showMessage(successTemplate, '.success__inner', '.success__button');
