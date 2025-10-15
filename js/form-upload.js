@@ -119,6 +119,10 @@ const closeUploadForm = () => {
   resetForm();
 };
 
+const onCancelButtonClick = () => {
+  closeUploadForm();
+};
+
 const createEscapeHandler = () => (evt) => {
   if (isEscapeKey(evt)) {
     if (document.activeElement === hashtagsInput ||
@@ -179,7 +183,7 @@ if (imgUploadInput) {
 }
 
 if (imgUploadCancel) {
-  imgUploadCancel.addEventListener('click', closeUploadForm);
+  imgUploadCancel.addEventListener('click', onCancelButtonClick);
 }
 
 imgUploadForm.addEventListener('submit', onFormSubmit);
